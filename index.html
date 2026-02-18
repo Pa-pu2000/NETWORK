@@ -1,31 +1,77 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Network Topology</title>
-    <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Network Dashboard</title>
+    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
     <style>
-        #mynetwork { width: 100%; height: 500px; border: 1px solid lightgray; background: #fff; }
-        body { font-family: sans-serif; text-align: center; background: #f0f2f5; }
-        #details { padding: 15px; background: #34495e; color: white; border-radius: 5px; margin-top: 10px; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: #1a1a2e; color: white; text-align: center; margin: 0; }
+        #mynetwork { width: 100%; height: 600px; background-color: #16213e; border-bottom: 2px solid #0f3460; }
+        #info-box { padding: 20px; background: #0f3460; min-height: 80px; }
+        h2 { margin: 10px 0; color: #4ecca3; }
+        .status-online { color: #4ecca3; font-weight: bold; }
     </style>
 </head>
 <body>
-    <h2>Network Topology Dashboard</h2>
+
+    <h2>Live Network Topology Dashboard</h2>
     <div id="mynetwork"></div>
-    <div id="details">Device par click karein uski details ke liye.</div>
+    <div id="info-box">
+        <div id="details">Kisi bhi device par click karein uski "Kundli" dekhne ke liye.</div>
+    </div>
 
     <script>
+        // Nodes with Icons
         var nodes = new vis.DataSet([
-            { id: 1, label: 'INTERNET', color: '#87CEEB' },
-            { id: 2, label: 'FIREWALL', color: '#E74C3C' },
-            { id: 3, label: 'SWITCH', color: '#2ECC71' },
-            { id: 4, label: 'SERVER', color: '#F1C40F' },
-            { id: 5, label: 'CLIENT PC', color: '#9B59B6' }
+            { id: 1, label: 'INTERNET', shape: 'image', image: 'https://cdn-icons-png.flaticon.com/512/1006/1006771.png' },
+            { id: 2, label: 'FIREWALL', shape: 'image', image: 'https://cdn-icons-png.flaticon.com/512/1042/1042308.png' },
+            { id: 3, label: 'ROUTER', shape: 'image', image: 'https://cdn-icons-png.flaticon.com/512/81/81443.png' },
+            { id: 4, label: 'SERVER 1', shape: 'image', image: 'https://cdn-icons-png.flaticon.com/512/2333/2333338.png' },
+            { id: 5, label: 'HUB', shape: 'image', image: 'https://cdn-icons-png.flaticon.com/512/565/565451.png' },
+            { id: 6, label: 'Client PC', shape: 'image', image: 'https://cdn-icons-png.flaticon.com/512/3067/3067260.png' },
+            { id: 7, label: 'WiFi AP', shape: 'image', image: 'https://cdn-icons-png.flaticon.com/512/159/159599.png' },
+            { id: 8, label: 'Laptop', shape: 'image', image: 'https://cdn-icons-png.flaticon.com/512/428/428001.png' }
         ]);
+
+        // Animated Edges (Moving Dots)
         var edges = new vis.DataSet([
-            { from: 1, to: 2 }, { from: 2, to: 3 }, { from: 3, to: 4 }, { from: 3, to: 5 }
+            { from: 1, to: 2, arrows: 'to', dashes: true },
+            { from: 2, to: 3, arrows: 'to', dashes: true },
+            { from: 3, to: 4, arrows: 'to', dashes: true },
+            { from: 3, to: 5, arrows: 'to', dashes: true },
+            { from: 5, to: 6, arrows: 'to', dashes: true },
+            { from: 3, to: 7, arrows: 'to', dashes: true },
+            { from: 7, to: 8, arrows: 'to', dashes: true }
         ]);
-        var network = new vis.Network(document.getElementById('mynetwork'), {nodes, edges}, {});
+
+        var container = document.getElementById('mynetwork');
+        var data = { nodes: nodes, edges: edges };
+        var options = {
+            nodes: { size: 35, font: { color: '#ffffff', size: 14, strokeWidth: 2, strokeColor: '#000000' } },
+            edges: { width: 2, color: { color: '#4ecca3' }, smooth: { enabled: true } },
+            physics: { enabled: true, barnesHut: { gravitationalConstant: -3000 } }
+        };
+
+        var network = new vis.Network(container, data, options);
+
+        // Animation logic
+        var offset = 0;
+        function animate() {
+            offset++;
+            network.setOptions({ edges: { dashes: [10, 10], dashOffset: -offset } });
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        // Click interaction
+        network.on("click", function (params) {
+            if (params.nodes.length > 0) {
+                var nodeLabel = nodes.get(params.nodes[0]).label;
+                document.getElementById('details').innerHTML = 
+                    "<b>Device:</b> " + nodeLabel + " | <span class='status-online'>Status: ONLINE ✅</span><br>IP: 192.168.1." + (10 + params.nodes[0]);
+            }
+        });
     </script>
 </body>
 </html>
