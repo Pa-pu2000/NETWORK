@@ -1,23 +1,31 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Interactive Network Diagram</title>
-    <link rel="stylesheet" href="style.css">
-    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <title>Network Topology</title>
+    <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <style>
+        #mynetwork { width: 100%; height: 500px; border: 1px solid lightgray; background: #fff; }
+        body { font-family: sans-serif; text-align: center; background: #f0f2f5; }
+        #details { padding: 15px; background: #34495e; color: white; border-radius: 5px; margin-top: 10px; }
+    </style>
 </head>
 <body>
-    <div id="container">
-        <h1>Network Topology Dashboard</h1>
-        <div id="mynetwork"></div>
-        <div id="info-box">
-            <h3>Device Details</h3>
-            <p id="details">Kisi bhi device (node) par click karein uski "Kundli" dekhne ke liye.</p>
-        </div>
-    </div>
-    <script src="script.js"></script>
+    <h2>Network Topology Dashboard</h2>
+    <div id="mynetwork"></div>
+    <div id="details">Device par click karein uski details ke liye.</div>
+
+    <script>
+        var nodes = new vis.DataSet([
+            { id: 1, label: 'INTERNET', color: '#87CEEB' },
+            { id: 2, label: 'FIREWALL', color: '#E74C3C' },
+            { id: 3, label: 'ROUTER', color: '#2ECC71' },
+            { id: 4, label: 'SERVER', color: '#F1C40F' },
+            { id: 5, label: 'CLIENT PC', color: '#9B59B6' }
+        ]);
+        var edges = new vis.DataSet([
+            { from: 1, to: 2 }, { from: 2, to: 3 }, { from: 3, to: 4 }, { from: 3, to: 5 }
+        ]);
+        var network = new vis.Network(document.getElementById('mynetwork'), {nodes, edges}, {});
+    </script>
 </body>
 </html>
-
-
